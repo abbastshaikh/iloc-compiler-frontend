@@ -1,0 +1,27 @@
+#pragma once
+
+enum class Opcode: int {
+    LOAD = 0,
+    STORE,
+    LOADI,
+    ADD,
+    SUB,
+    MULT,
+    LSHIFT,
+    RSHIFT,
+    OUTPUT,
+    NOP
+};
+
+const std::string OpcodeNames[10] = {
+    "load",
+    "store",
+    "loadI",
+    "add",
+    "sub",
+    "mult",
+    "lshift",
+    "rshift",
+    "output",
+    "nop"
+};
