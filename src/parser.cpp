@@ -1,7 +1,6 @@
 #include <Parser.hpp>
 #include <Scanner.hpp>
 #include <Operation.hpp>
-#include <exception>
 
 InternalRepresentation Parser::parse() {
     LinkedList<Operation> representation;

@@ -3,7 +3,6 @@
 #include <Scanner.hpp>
 #include <LinkedList.hpp>
 #include <Operation.hpp>
-#include <fstream>
 #include <string>
 #include <exception>
 

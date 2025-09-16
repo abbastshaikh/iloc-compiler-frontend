@@ -1,11 +1,6 @@
 #include <Scanner.hpp>
 #include <Parser.hpp>
-#include <Token.hpp>
-#include <Opcode.hpp>
-#include <LinkedList.hpp>
-#include <Operation.hpp>
 #include <iostream>
-#include <fstream>
 #include <cstring>
 
 // TODO: Scanner implementation
@@ -23,43 +18,55 @@ void help () {
 
 void scan (std::string filename) {
 
-   int line = 1;
-   Scanner scanner (filename);
+   try {
+      Scanner scanner (filename);
 
-   Token token = scanner.nextToken();    
-   while (token.category != Category::CAT_EOF) {
-      std::cout << line << ": " << token.toString() << std::endl;
-      if (token.category != Category::CAT_EOL){
-         line ++;
+      int line = 1;
+      Token token = scanner.nextToken();    
+      while (token.category != Category::CAT_EOF) {
+         std::cout << line << ": " << token.toString() << std::endl;
+         if (token.category != Category::CAT_EOL){
+            line ++;
+         }
+         token = scanner.nextToken();
       }
-      token = scanner.nextToken();
+      std::cout << line << ": " << token.toString() << std::endl;
+   } catch (FileNotFoundException& e) {
+      std::cerr << "ERROR: " << e.what() << std::endl;
    }
-   std::cout << line << ": " << token.toString() << std::endl;
 }
 
 void parse (std::string filename) {
 
-   Scanner scanner (filename);
-
    try {
-      Parser parser (scanner);
-      InternalRepresentation rep = parser.parse();
-      std::cout << "Parse succeeded. Processed " << rep.count << " operations." << std::endl;
-   } catch (...) {
-      std::cerr << "Parse found errors." << std::endl;
+      Scanner scanner (filename);
+
+      try {
+         Parser parser (scanner);
+         InternalRepresentation rep = parser.parse();
+         std::cout << "Parse succeeded. Processed " << rep.count << " operations." << std::endl;
+      } catch (...) {
+         std::cerr << "Parse found errors." << std::endl;
+      }
+   } catch (FileNotFoundException& e) {
+      std::cerr << "ERROR: " << e.what() << std::endl;
    }
 }
 
 void printIR (std::string filename) {
-   
-   Scanner scanner (filename);
 
    try {
-      Parser parser (scanner);
-      InternalRepresentation rep = parser.parse();
-      rep.operations->print();
-   } catch (...) {
-      std::cerr << "Due to syntax errors, run terminates." << std::endl;
+      Scanner scanner (filename);
+
+      try {
+         Parser parser (scanner);
+         InternalRepresentation rep = parser.parse();
+         rep.operations->print();
+      } catch (...) {
+         std::cerr << "Due to syntax errors, run terminates." << std::endl;
+      }
+   } catch (FileNotFoundException& e) {
+      std::cerr << "ERROR: " << e.what() << std::endl;
    }
 }
 

@@ -1,9 +1,7 @@
 #pragma once
 
 #include <string>
-#include <iostream>
 #include <stdexcept>
-#include <optional>
 #include <Opcode.hpp>
 
 enum class Category: int {
