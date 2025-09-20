@@ -83,7 +83,7 @@ public:
         table[26]['p'] = 27;
 
         accepting.insert(27);
-        stateToCategory[18] = Category::CAT_NOP;
+        stateToCategory[27] = Category::CAT_NOP;
 
         // OUTPUT
         table[0]['o'] = 28;

@@ -26,7 +26,6 @@ void scan (std::string filename) {
       while (token.category != Category::CAT_EOF) {
          if (token.category == Category::CAT_INVAL) {
             std::cout << "ERROR " << line << ": Invalid token detected." << std::endl;
-            line ++;
          }
          else {
             std::cout << line << ": " << token.toString() << std::endl;
