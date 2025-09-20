@@ -14,6 +14,12 @@ public:
 private:
     std::ifstream file;
     TransitionTable table;
+    std::string buffer;
+    int index;
+    int line;
+    bool eof;
+
+    void readLine();
 };
 
 class FileNotFoundException : public std::exception {

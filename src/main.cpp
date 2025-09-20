@@ -24,9 +24,15 @@ void scan (std::string filename) {
       int line = 1;
       Token token = scanner.nextToken();    
       while (token.category != Category::CAT_EOF) {
-         std::cout << line << ": " << token.toString() << std::endl;
-         if (token.category != Category::CAT_EOL){
+         if (token.category == Category::CAT_INVAL) {
+            std::cout << "ERROR " << line << ": Invalid token detected." << std::endl;
             line ++;
+         }
+         else {
+            std::cout << line << ": " << token.toString() << std::endl;
+            if (token.category == Category::CAT_EOL){
+               line ++;
+            }
          }
          token = scanner.nextToken();
       }

@@ -15,7 +15,8 @@ enum class Category: int {
     CAT_COMMA,
     CAT_INTO,
     CAT_EOF,
-    CAT_EOL
+    CAT_EOL,
+    CAT_INVAL
 };
 
 const std::string CategoryNames[11] = {
@@ -24,12 +25,12 @@ const std::string CategoryNames[11] = {
     "ARITHOP",
     "OUTPUT",
     "NOP",
-    "CONSTANT",
-    "REGISTER",
+    "CONST",
+    "REG",
     "COMMA",
     "INTO",
-    "EOF",
-    "EOL"
+    "ENDFILE",
+    "NEWLINE"
 };
 
 class Token {

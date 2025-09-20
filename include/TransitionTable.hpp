@@ -1,5 +1,7 @@
 #pragma once
 #include <unordered_set>
+#include <map>
+#include <Token.hpp>
 
 class TransitionTable{
 private: 
@@ -9,6 +11,7 @@ private:
 public:
     int table[NUM_STATES][NUM_CHARS] = {{0}};
     std::unordered_set<int> accepting;
+    std::map<int, Category> stateToCategory;
 
     TransitionTable() {
 
@@ -24,12 +27,16 @@ public:
         table[2]['o'] = 3;
         table[3]['r'] = 4;
         table[4]['e'] = 5;
+        
         accepting.insert(5);
+        stateToCategory[5] = Category::CAT_MEMOP;
 
         // SUB
         table[1]['u'] = 6;
         table[6]['b'] = 7;
+        
         accepting.insert(7);
+        stateToCategory[7] = Category::CAT_ARITHOP;
 
         // LOAD + LOADI
         table[0]['l'] = 8;
@@ -37,8 +44,12 @@ public:
         table[9]['a'] = 10;
         table[10]['d'] = 11;
         table[11]['I'] = 12;
+        
         accepting.insert(11);
+        stateToCategory[11] = Category::CAT_MEMOP;
+        
         accepting.insert(12);
+        stateToCategory[12] = Category::CAT_LOADI;
 
         // RSHIFT + LSHIFT
         table[0]['r'] = 13;
@@ -48,7 +59,9 @@ public:
         table[15]['i'] = 16;
         table[16]['f'] = 17;
         table[17]['t'] = 18;
+
         accepting.insert(18);
+        stateToCategory[18] = Category::CAT_ARITHOP;
 
         // MULT
         table[0]['m'] = 19;
@@ -60,13 +73,17 @@ public:
         table[0]['a'] = 22;
         table[22]['d'] = 23;
         table[23]['d'] = 24;
+
         accepting.insert(24);
+        stateToCategory[24] = Category::CAT_ARITHOP;
 
         // NOP
         table[0]['n'] = 25;
         table[25]['o'] = 26;
         table[26]['p'] = 27;
+
         accepting.insert(27);
+        stateToCategory[18] = Category::CAT_NOP;
 
         // OUTPUT
         table[0]['o'] = 28;
@@ -75,34 +92,46 @@ public:
         table[30]['p'] = 31;
         table[31]['u'] = 32;
         table[32]['t'] = 33;
+
         accepting.insert(33);
+        stateToCategory[33] = Category::CAT_OUTPUT;
 
         // INTO
         table[0]['='] = 34;
         table[34]['>'] = 35;
+
         accepting.insert(35);
+        stateToCategory[35] = Category::CAT_INTO;
 
         // COMMA
         table[0][','] = 36;
+
         accepting.insert(36);
+        stateToCategory[36] = Category::CAT_COMMA;
 
         // EOL
         table[0]['\n'] = 37;
+
         accepting.insert(37);
+        stateToCategory[37] = Category::CAT_EOL;
 
         // CONSTANT ('0' = 48 -> '9' = 57)
         for (int i = 48; i <= 57; i++) {
             table[0][i] = 38;
             table[38][i] = 38;
         }
+
         accepting.insert(38);
+        stateToCategory[38] = Category::CAT_CONSTANT;
 
         // REGISTER
         for (int i = 48; i <= 57; i++) {
             table[13][i] = 39;
             table[39][i] = 39;
         }
+
         accepting.insert(39);
+        stateToCategory[39] = Category::CAT_REGISTER;
 
         // COMMENT
         table[0]['/'] = 40;
