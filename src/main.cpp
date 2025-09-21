@@ -7,10 +7,10 @@ void help () {
    std::cout << "Usage: 412fe [-h] [-s <filename>] [-p <filename>] [-r <filename>] [<filename>]" << std::endl;
    std::cout << "Options:" << std::endl;
    std::cout << "   -h: Print this help menu." << std::endl;
-   std::cout << "   -s <filename>: Scan <filename> and print all tokens." << std::endl;
-   std::cout << "   -p <filename>: Scan & parse <filename> and print number of parsed operations." << std::endl;
-   std::cout << "   -r <filename>: Scan & parse <filename> and print the intermediate representation." << std::endl;
-   std::cout << "   <filename>: Scan & parse <filename> and print number of parsed operations." << std::endl;
+   std::cout << "   -s <filename>: Scan <filename> and print all scanned tokens." << std::endl;
+   std::cout << "   -p <filename>: Scan and parse <filename> and print number of parsed operations." << std::endl;
+   std::cout << "   -r <filename>: Scan and parse <filename> and print the intermediate representation." << std::endl;
+   std::cout << "   <filename>: Scan and parse <filename> and print number of parsed operations." << std::endl;
 }
 
 void scan (std::string filename) {
