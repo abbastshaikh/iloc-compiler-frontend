@@ -19,7 +19,7 @@ enum class Category: int {
     CAT_INVAL
 };
 
-const std::string CategoryNames[11] = {
+const std::string CategoryNames[12] = {
     "MEMOP",
     "LOADI",
     "ARITHOP",
@@ -30,7 +30,8 @@ const std::string CategoryNames[11] = {
     "COMMA",
     "INTO",
     "ENDFILE",
-    "NEWLINE"
+    "NEWLINE",
+    "INVALID"
 };
 
 class Token {
@@ -60,6 +61,8 @@ public:
                 return "\\n";
             case Category::CAT_EOF:
                 return "";
+            case Category::CAT_INVAL:
+                return "<invalid>";
             default:
                 throw std::invalid_argument("Token has invalid category.");
         }

@@ -3,9 +3,6 @@
 #include <iostream>
 #include <cstring>
 
-// TODO: Scanner implementation
-// TODO: Parser error handling
-
 void help () {
    std::cout << "Usage: 412fe [-h] [-s <filename>] [-p <filename>] [-r <filename>] [<filename>]" << std::endl;
    std::cout << "Options:" << std::endl;
@@ -24,10 +21,7 @@ void scan (std::string filename) {
       int line = 1;
       Token token = scanner.nextToken();    
       while (token.category != Category::CAT_EOF) {
-         if (token.category == Category::CAT_INVAL) {
-            std::cout << "ERROR " << line << ": Invalid token detected." << std::endl;
-         }
-         else {
+         if (token.category != Category::CAT_INVAL) {
             std::cout << line << ": " << token.toString() << std::endl;
             if (token.category == Category::CAT_EOL){
                line ++;

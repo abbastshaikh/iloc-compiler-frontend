@@ -22,6 +22,7 @@ Token Scanner::nextToken() {
     int nextState;
     char currChar;
     char nextChar;
+    int start = index;
 
     if (eof) {
         return Token(Category::CAT_EOF, -1); 
@@ -29,11 +30,6 @@ Token Scanner::nextToken() {
 
     currChar = buffer[index];
     currState = table.table[0][currChar];
-
-    // if (currState == 37) {
-    //     readLine();
-    //     return Token(Category::CAT_EOL, -1);
-    // }
 
     index ++;
     nextChar = buffer[index];
@@ -55,6 +51,7 @@ Token Scanner::nextToken() {
         return Token(category, 0);
         
     } else {
+        std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(start, index - start) << "\" is not a valid word." << std::endl;
         index = buffer.size() - 1;
         return Token(Category::CAT_INVAL, -1);
     }
@@ -62,11 +59,10 @@ Token Scanner::nextToken() {
 }
 
 void Scanner::readLine() {
-    if (file.eof()) {
+    if (!std::getline(file, buffer)) {
         eof = true;
         return;
     }
-    std::getline(file, buffer);
     buffer += "\n";
     index = 0;
     line ++;

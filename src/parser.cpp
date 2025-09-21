@@ -17,7 +17,7 @@ InternalRepresentation Parser::parse() {
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
-                    std::cerr << "ERROR (" << this->line << "): "  << e.what() << std::endl;
+                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
                     if (e.getToken().category == Category::CAT_EOF) {
                         throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
                     }
@@ -29,7 +29,7 @@ InternalRepresentation Parser::parse() {
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
-                    std::cerr << "ERROR (" << this->line << "): "  << e.what() << std::endl;
+                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
                     if (e.getToken().category == Category::CAT_EOF) {
                         throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
                     }
@@ -41,7 +41,7 @@ InternalRepresentation Parser::parse() {
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
-                    std::cerr << "ERROR (" << this->line << "): "  << e.what() << std::endl;
+                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
                     if (e.getToken().category == Category::CAT_EOF) {
                         throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
                     }
@@ -53,7 +53,7 @@ InternalRepresentation Parser::parse() {
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
-                    std::cerr << "ERROR (" << this->line << "): "  << e.what() << std::endl;
+                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
                     if (e.getToken().category == Category::CAT_EOF) {
                         throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
                     }
@@ -65,7 +65,7 @@ InternalRepresentation Parser::parse() {
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
-                    std::cerr << "ERROR (" << this->line << "): "  << e.what() << std::endl;
+                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
                     if (e.getToken().category == Category::CAT_EOF) {
                         throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
                     }
@@ -75,11 +75,9 @@ InternalRepresentation Parser::parse() {
                 break;
             default:
                 error = true;
-                std::cerr << "ERROR (" << this->line << "): Unexpected token: " << token.getLexeme() << std::endl;
+                std::cerr << "ERROR " << this->line << ": Operation starts with an invalid opcode." << std::endl;
                 this->readToNextLine();
         }
-
-        // TODO: Handle did not reach EOF, i.e. next token fails without reaching EOF
         token = scanner.nextToken();
     }
 
@@ -100,7 +98,7 @@ Operation Parser::finishMEMOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected register, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing source register in MEMOP.");
     }
     op.op1.SR = token.lexeme;
 
@@ -109,7 +107,7 @@ Operation Parser::finishMEMOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected \"=>\", got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing \"=>\" in MEMOP.");
     }
 
     token = scanner.nextToken();
@@ -117,7 +115,7 @@ Operation Parser::finishMEMOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected register, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing target register in MEMOP.");
     }
     op.op3.SR = token.lexeme;
 
@@ -126,7 +124,7 @@ Operation Parser::finishMEMOP(Opcode opcode) {
         if (token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected EOL, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Extra token at end of line in MEMOP.");
     }
 
     return op;
@@ -143,7 +141,7 @@ Operation Parser::finishLOADI(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected constant, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing constant in LOADI.");
     }
     op.op1.SR = token.lexeme;
 
@@ -152,7 +150,7 @@ Operation Parser::finishLOADI(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected \"=>\", got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing \"=>\" in LOADI.");
     }
 
     token = scanner.nextToken();
@@ -160,7 +158,7 @@ Operation Parser::finishLOADI(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected register, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing target register in LOADI.");
     }
     op.op3.SR = token.lexeme;
 
@@ -169,7 +167,7 @@ Operation Parser::finishLOADI(Opcode opcode) {
         if (token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected EOL, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Extra token at end of line in LOADI.");
     }
 
     return op;
@@ -186,7 +184,7 @@ Operation Parser::finishARITHOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected register, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing first source register in ARITHOP.");
     }
     op.op1.SR = token.lexeme;
 
@@ -195,7 +193,7 @@ Operation Parser::finishARITHOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected \",\", got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing \",\" in ARITHOP.");
     }
 
     token = scanner.nextToken();
@@ -203,7 +201,7 @@ Operation Parser::finishARITHOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected register, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing second source register in ARITHOP.");
     }
     op.op2.SR = token.lexeme;
 
@@ -212,7 +210,7 @@ Operation Parser::finishARITHOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected =>, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing \"=>\" in ARITHOP.");
     }
 
     token = scanner.nextToken();
@@ -220,7 +218,7 @@ Operation Parser::finishARITHOP(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected register, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing target register in ARITHOP.");
     }
     op.op3.SR = token.lexeme;
 
@@ -229,7 +227,7 @@ Operation Parser::finishARITHOP(Opcode opcode) {
         if (token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected EOL, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Extra token at end of line in ARITHOP.");
     }
 
     return op;
@@ -246,7 +244,7 @@ Operation Parser::finishOUTPUT(Opcode opcode) {
         if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected constant, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Missing constant in OUTPUT.");
     }
     op.op1.SR = token.lexeme;
 
@@ -255,7 +253,7 @@ Operation Parser::finishOUTPUT(Opcode opcode) {
         if (token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected EOL, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Extra token at end of line in OUTPUT.");
     }
 
     return op;
@@ -271,7 +269,7 @@ Operation Parser::finishNOP(Opcode opcode) {
         if (token.category != Category::CAT_EOF) {
             this->readToNextLine();
         }
-        throw InvalidTokenException(token, "Expected EOL, got " + token.getLexeme());
+        throw InvalidTokenException(token, "Extra token at end of line in NOP.");
     }
 
     return op;
