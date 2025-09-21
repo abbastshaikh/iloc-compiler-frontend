@@ -1,7 +1,7 @@
 //NAME: Abbas Shaikh
 //NETID: ats16
 
-This program provides an ILOC scanner and parser implementation.
+This program provides an implementation of the frontend of an ILOC compiler.
 
 To build this program, run `make build`. This will generate an executable, 412fe, which can be used to run the ILOC scanner and parser.
 
