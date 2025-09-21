@@ -21,14 +21,16 @@ Token Scanner::nextToken() {
     int currState;
     int nextState;
     int first;
-    char nextChar;
+    unsigned char currChar;
+    unsigned char nextChar;
     int start = index;
 
     if (eof) {
         return Token(Category::CAT_EOF, -1); 
     }
 
-    currState = table.table[0][buffer[index]];
+    currChar = buffer[index];
+    currState = table.table[0][currChar];
     if (currState == -1) {
         std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(start, index - start) << "\" is not a valid word." << std::endl;
         index = buffer.size() - 1;
@@ -37,7 +39,8 @@ Token Scanner::nextToken() {
 
     while (currState == 0){
         index ++;
-        currState = table.table[0][buffer[index]];
+        currChar = buffer[index];
+        currState = table.table[0][currChar];
     }
     first = index;
 
@@ -47,6 +50,7 @@ Token Scanner::nextToken() {
 
     while (nextState != -1) {
         index ++;
+        currChar = nextChar;
         currState = nextState;
         nextChar = buffer[index];
         nextState = table.table[currState][nextChar];
