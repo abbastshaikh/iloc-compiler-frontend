@@ -20,7 +20,7 @@ Token Scanner::nextToken() {
 
     int currState;
     int nextState;
-    char currChar;
+    int first;
     char nextChar;
     int start = index;
 
@@ -28,8 +28,12 @@ Token Scanner::nextToken() {
         return Token(Category::CAT_EOF, -1); 
     }
 
-    currChar = buffer[index];
-    currState = table.table[0][currChar];
+    currState = table.table[0][buffer[index]];
+    while (currState == 0){
+        index ++;
+        currState = table.table[0][buffer[index]];
+    }
+    first = index;
 
     index ++;
     nextChar = buffer[index];
@@ -37,7 +41,6 @@ Token Scanner::nextToken() {
 
     while (nextState != -1) {
         index ++;
-        currChar = nextChar;
         currState = nextState;
         nextChar = buffer[index];
         nextState = table.table[currState][nextChar];
@@ -48,8 +51,7 @@ Token Scanner::nextToken() {
         if (category == Category::CAT_EOL) {
             readLine();
         }
-        return Token(category, 0);
-        
+        return Token(category, this->getLexeme(category, first));
     } else {
         std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(start, index - start) << "\" is not a valid word." << std::endl;
         index = buffer.size() - 1;
@@ -66,4 +68,40 @@ void Scanner::readLine() {
     buffer += "\n";
     index = 0;
     line ++;
+}
+
+int Scanner::getLexeme(Category category, int first) {
+    switch (category) {
+        case Category::CAT_MEMOP:
+            if (buffer[first] == 's') {
+                return (int) Opcode::STORE; 
+            }
+            return (int) Opcode::LOAD;
+        case Category::CAT_LOADI:
+            return (int) Opcode::LOADI;
+        case Category::CAT_ARITHOP:
+            if (buffer[first] == 'a') {
+                return (int) Opcode::ADD; 
+            }
+            if (buffer[first] == 's') {
+                return (int) Opcode::SUB; 
+            }
+            if (buffer[first] == 'm') {
+                return (int) Opcode::MULT; 
+            }
+            if (buffer[first] == 'l') {
+                return (int) Opcode::LSHIFT; 
+            }
+            return (int) Opcode::RSHIFT; 
+        case Category::CAT_OUTPUT:
+            return (int) Opcode::OUTPUT; 
+        case Category::CAT_NOP:
+            return (int) Opcode::NOP; 
+        case Category::CAT_CONSTANT:
+            return std::stoi(buffer.substr(first, index - first)); 
+        case Category::CAT_REGISTER:
+            return std::stoi(buffer.substr(first + 1, index - first - 1)); 
+        default:
+            return -1;
+    }
 }

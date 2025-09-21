@@ -20,19 +20,19 @@ struct Operation {
         switch (this->opcode) {
             case Opcode::LOAD: 
             case Opcode::STORE: 
-                return OpcodeNames[(int) opcode] + " [ sr" + std::to_string(op1.SR) + " ]," + " [ ]," + " [ sr" + std::to_string(op3.SR) + " ]";
+                return OpcodeNamesPadded[(int) opcode] + " [ sr" + std::to_string(op1.SR) + " ]," + " [ ]," + " [ sr" + std::to_string(op3.SR) + " ]";
             case Opcode::LOADI:
-                return OpcodeNames[(int) opcode] + " [ val " + std::to_string(op1.SR) + " ]," + " [ ]," + " [ sr" + std::to_string(op3.SR) + " ]";
+                return OpcodeNamesPadded[(int) opcode] + " [ val " + std::to_string(op1.SR) + " ]," + " [ ]," + " [ sr" + std::to_string(op3.SR) + " ]";
             case Opcode::ADD: 
             case Opcode::SUB:
             case Opcode::MULT: 
             case Opcode::LSHIFT: 
             case Opcode::RSHIFT: 
-                return OpcodeNames[(int) opcode] + " [ sr" + std::to_string(op1.SR) + " ]," + " [ sr" + std::to_string(op2.SR) + " ]," + " [ sr" + std::to_string(op3.SR) + " ]";
+                return OpcodeNamesPadded[(int) opcode] + " [ sr" + std::to_string(op1.SR) + " ]," + " [ sr" + std::to_string(op2.SR) + " ]," + " [ sr" + std::to_string(op3.SR) + " ]";
             case Opcode::OUTPUT:
-                return OpcodeNames[(int) opcode] + " [ val " + std::to_string(op1.SR) + " ]," + " [ ]," + " [ ]";
+                return OpcodeNamesPadded[(int) opcode] + " [ val " + std::to_string(op1.SR) + " ]," + " [ ]," + " [ ]";
             case Opcode::NOP: 
-                return OpcodeNames[(int) opcode] + " [ ]," + " [ ]," + " [ ]";
+                return OpcodeNamesPadded[(int) opcode] + " [ ]," + " [ ]," + " [ ]";
             default:
                 throw std::invalid_argument("Operaiton has invalid opcode.");
         }

@@ -20,6 +20,7 @@ private:
     bool eof;
 
     void readLine();
+    int getLexeme(Category category, int first);
 };
 
 class FileNotFoundException : public std::exception {

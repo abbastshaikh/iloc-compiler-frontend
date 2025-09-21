@@ -25,3 +25,16 @@ const std::string OpcodeNames[10] = {
     "output",
     "nop"
 };
+
+const std::string OpcodeNamesPadded[10] = {
+    "load   ",
+    "store  ",
+    "loadI  ",
+    "add    ",
+    "sub    ",
+    "mult   ",
+    "lshift ",
+    "rshift ",
+    "output ",
+    "nop    "
+};

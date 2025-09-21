@@ -3,7 +3,7 @@
 #include <Operation.hpp>
 
 InternalRepresentation Parser::parse() {
-    LinkedList<Operation> representation;
+    LinkedList<Operation>* representation = new LinkedList<Operation>();
     bool error = false;
     int count = 0;
 
@@ -13,7 +13,7 @@ InternalRepresentation Parser::parse() {
         switch (token.category) {
             case Category::CAT_MEMOP:
                 try {
-                    representation.append(this->finishMEMOP(static_cast<Opcode>(token.lexeme)));
+                    representation->append(this->finishMEMOP(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
@@ -25,7 +25,7 @@ InternalRepresentation Parser::parse() {
                 break;
             case Category::CAT_LOADI:
                 try {
-                    representation.append(finishLOADI(static_cast<Opcode>(token.lexeme)));
+                    representation->append(finishLOADI(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
@@ -37,7 +37,7 @@ InternalRepresentation Parser::parse() {
                 break;
             case Category::CAT_ARITHOP:
                 try {
-                    representation.append(finishARITHOP(static_cast<Opcode>(token.lexeme)));
+                    representation->append(finishARITHOP(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
@@ -49,7 +49,7 @@ InternalRepresentation Parser::parse() {
                 break;
             case Category::CAT_OUTPUT:
                 try {
-                    representation.append(finishOUTPUT(static_cast<Opcode>(token.lexeme)));
+                    representation->append(finishOUTPUT(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
@@ -61,7 +61,7 @@ InternalRepresentation Parser::parse() {
                 break;
             case Category::CAT_NOP:
                 try {
-                    representation.append(finishNOP(static_cast<Opcode>(token.lexeme)));
+                    representation->append(finishNOP(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
                     error = true;
@@ -84,7 +84,7 @@ InternalRepresentation Parser::parse() {
     if (error) {
         throw new ParseFailedException("");
     }
-    return {count, &representation};
+    return {count, representation};
 }
 
 Operation Parser::finishMEMOP(Opcode opcode) {
