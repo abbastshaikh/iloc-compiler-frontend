@@ -29,6 +29,12 @@ Token Scanner::nextToken() {
     }
 
     currState = table.table[0][buffer[index]];
+    if (currState == -1) {
+        std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(start, index - start) << "\" is not a valid word." << std::endl;
+        index = buffer.size() - 1;
+        return Token(Category::CAT_INVAL, -1); 
+    }
+
     while (currState == 0){
         index ++;
         currState = table.table[0][buffer[index]];
