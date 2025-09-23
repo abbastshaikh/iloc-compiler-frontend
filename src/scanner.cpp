@@ -1,8 +1,8 @@
 #include <Scanner.hpp>
 #include <TransitionTable.hpp>
-#include <stack>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 Scanner::Scanner(const std::string filename) {
     file = std::ifstream (filename);
@@ -23,8 +23,7 @@ Token Scanner::nextToken() {
     int first;
     unsigned char currChar;
     unsigned char nextChar;
-    int start = index;
-
+    
     if (eof) {
         return Token(Category::CAT_EOF, -1); 
     }
@@ -32,7 +31,7 @@ Token Scanner::nextToken() {
     currChar = buffer[index];
     currState = table.table[0][currChar];
     if (currState == -1) {
-        std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(start, index - start) << "\" is not a valid word." << std::endl;
+        std::cerr << "ERROR " << this->line << ": \"" << currChar << "\" is not a valid word." << std::endl;
         index = buffer.size() - 1;
         return Token(Category::CAT_INVAL, -1); 
     }
@@ -63,7 +62,8 @@ Token Scanner::nextToken() {
         }
         return Token(category, this->getLexeme(category, first));
     } else {
-        std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(start, index - start) << "\" is not a valid word." << std::endl;
+        int length = std::min<int>(index - first + 1, buffer.size() - first - 1);
+        std::cerr << "ERROR " << this->line << ": \"" << buffer.substr(first, length) << "\" is not a valid word." << std::endl;
         index = buffer.size() - 1;
         return Token(Category::CAT_INVAL, -1);
     }

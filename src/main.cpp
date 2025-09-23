@@ -13,6 +13,12 @@ void help () {
    std::cout << "   <filename>: Scan and parse <filename> and print number of parsed operations." << std::endl;
 }
 
+void printError (std::string message) {
+   std::cerr << "ERROR: " << message << std::endl;
+   std::cout << std::endl;
+   help();
+}
+
 void scan (std::string filename) {
 
    try {
@@ -31,7 +37,7 @@ void scan (std::string filename) {
       }
       std::cout << line << ": " << token.toString() << std::endl;
    } catch (FileNotFoundException& e) {
-      std::cerr << "ERROR: " << e.what() << std::endl;
+      printError(e.what());
    }
 }
 
@@ -48,7 +54,7 @@ void parse (std::string filename) {
          std::cerr << "Parse found errors." << std::endl;
       }
    } catch (FileNotFoundException& e) {
-      std::cerr << "ERROR: " << e.what() << std::endl;
+      printError(e.what());
    }
 }
 
@@ -65,14 +71,14 @@ void printIR (std::string filename) {
          std::cerr << "Due to syntax errors, run terminates." << std::endl;
       }
    } catch (FileNotFoundException& e) {
-      std::cerr << "ERROR: " << e.what() << std::endl;
+      printError(e.what());
    }
 }
 
 int main (int argc, char *argv[]) {
 
    if (argc < 2) {
-      std::cerr << "ERROR: Must provide command line arguments." << std::endl;
+      printError("Must provide command line arguments.");
       return -1;
    }
 
@@ -80,19 +86,25 @@ int main (int argc, char *argv[]) {
       help();
    } else if (!strcmp(argv[1], "-s")){
       if (argc == 2) {
-         std::cerr << "ERROR: Expected filename after -s." << std::endl;
+         printError("Expected filename after -s.");
          return -1;
       }
       scan(argv[2]);
    } else if (!strcmp(argv[1], "-p")){
       if (argc == 2) {
-         std::cerr << "ERROR: Expected filename after -p." << std::endl;
+         printError("Expected filename after -p.");
          return -1;
       }
       parse(argv[2]);
    } else if (!strcmp(argv[1], "-r")){
       if (argc == 2) {
-         std::cerr << "ERROR: Expected filename after -r." << std::endl;
+         printError("Expected filename after -r.");
+         return -1;
+      }
+      printIR(argv[2]);
+   } else if (argv[1][0] == '-'){
+      if (argc == 2) {
+         printError("Option " + std::string(argv[1]) + " not recognized.");
          return -1;
       }
       printIR(argv[2]);
