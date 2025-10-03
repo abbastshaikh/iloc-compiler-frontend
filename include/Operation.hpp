@@ -39,27 +39,5 @@ struct Operation {
                 throw std::invalid_argument("Operation has invalid opcode.");
         }
     }
-
-    std::string printVR () {
-        switch (this->opcode) {
-            case Opcode::LOAD: 
-            case Opcode::STORE: 
-                return OpcodeNamesPadded[(int) opcode] + "r" + std::to_string(op1.VR) + " => r" + std::to_string(op3.VR);
-            case Opcode::LOADI:
-                return OpcodeNamesPadded[(int) opcode] + std::to_string(op1.SR) + " => r" + std::to_string(op3.VR);
-            case Opcode::ADD: 
-            case Opcode::SUB:
-            case Opcode::MULT: 
-            case Opcode::LSHIFT: 
-            case Opcode::RSHIFT: 
-                return OpcodeNamesPadded[(int) opcode] + "r" + std::to_string(op1.VR) + ", r" + std::to_string(op2.VR) + " => r" + std::to_string(op3.VR);
-            case Opcode::OUTPUT:
-                return OpcodeNamesPadded[(int) opcode] + std::to_string(op1.SR);
-            case Opcode::NOP: 
-                return OpcodeNamesPadded[(int) opcode];
-            default:
-                throw std::invalid_argument("Operation has invalid opcode.");
-        }
-    }
 };
 
