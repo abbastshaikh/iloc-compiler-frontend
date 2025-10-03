@@ -4,7 +4,7 @@
 
 InternalRepresentation Parser::parse() {
     LinkedList<Operation>* representation = new LinkedList<Operation>();
-    bool error = false;
+    int error = 0;
     int count = 0;
 
     Token token = scanner.nextToken();    
@@ -16,11 +16,8 @@ InternalRepresentation Parser::parse() {
                     representation->append(this->finishMEMOP(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
-                    error = true;
-                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
-                    if (e.getToken().category == Category::CAT_EOF) {
-                        throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
-                    }
+                    this->handleInvalidToken(e);
+                    error++;
                 }    
                 break;
             case Category::CAT_LOADI:
@@ -28,11 +25,8 @@ InternalRepresentation Parser::parse() {
                     representation->append(finishLOADI(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
-                    error = true;
-                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
-                    if (e.getToken().category == Category::CAT_EOF) {
-                        throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
-                    }
+                    this->handleInvalidToken(e);
+                    error++;
                 }  
                 break;
             case Category::CAT_ARITHOP:
@@ -40,11 +34,8 @@ InternalRepresentation Parser::parse() {
                     representation->append(finishARITHOP(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
-                    error = true;
-                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
-                    if (e.getToken().category == Category::CAT_EOF) {
-                        throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
-                    }
+                    this->handleInvalidToken(e);
+                    error++;
                 }  
                 break;
             case Category::CAT_OUTPUT:
@@ -52,11 +43,8 @@ InternalRepresentation Parser::parse() {
                     representation->append(finishOUTPUT(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
-                    error = true;
-                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
-                    if (e.getToken().category == Category::CAT_EOF) {
-                        throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
-                    }
+                    this->handleInvalidToken(e);
+                    error++;
                 }  
                 break;
             case Category::CAT_NOP:
@@ -64,25 +52,21 @@ InternalRepresentation Parser::parse() {
                     representation->append(finishNOP(static_cast<Opcode>(token.lexeme)));
                     count++;
                 } catch (const InvalidTokenException& e) {
-                    error = true;
-                    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
-                    if (e.getToken().category == Category::CAT_EOF) {
-                        throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
-                    }
+                    this->handleInvalidToken(e);
+                    error++;
                 }  
                 break;
             case Category::CAT_EOL:
                 break;
             default:
-                error = true;
-                std::cerr << "ERROR " << this->line << ": Operation starts with an invalid opcode." << std::endl;
-                this->readToNextLine();
+                this->handleInvalidToken(InvalidTokenException(token, "Operation starts with an invalid opcode."));
+                error++;
         }
         token = scanner.nextToken();
     }
 
-    if (error) {
-        throw new ParseFailedException("");
+    if (error > 0) {
+        throw ParseFailedException("Parse failed with " + std::to_string(error) + " errors.");
     }
     return {count, representation};
 }
@@ -95,35 +79,23 @@ Operation Parser::finishMEMOP(Opcode opcode) {
 
     Token token = scanner.nextToken();
     if (token.category != Category::CAT_REGISTER) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing source register in MEMOP.");
     }
     op.op1.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_INTO) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing \"=>\" in MEMOP.");
     }
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_REGISTER) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing target register in MEMOP.");
     }
     op.op3.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_EOL) {
-        if (token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Extra token at end of line in MEMOP.");
     }
 
@@ -138,35 +110,23 @@ Operation Parser::finishLOADI(Opcode opcode) {
 
     Token token = scanner.nextToken();
     if (token.category != Category::CAT_CONSTANT) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing constant in LOADI.");
     }
     op.op1.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_INTO) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing \"=>\" in LOADI.");
     }
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_REGISTER) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing target register in LOADI.");
     }
     op.op3.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_EOL) {
-        if (token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Extra token at end of line in LOADI.");
     }
 
@@ -181,52 +141,34 @@ Operation Parser::finishARITHOP(Opcode opcode) {
 
     Token token = scanner.nextToken();
     if (token.category != Category::CAT_REGISTER) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing first source register in ARITHOP.");
     }
     op.op1.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_COMMA) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing \",\" in ARITHOP.");
     }
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_REGISTER) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing second source register in ARITHOP.");
     }
     op.op2.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_INTO) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing \"=>\" in ARITHOP.");
     }
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_REGISTER) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing target register in ARITHOP.");
     }
     op.op3.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_EOL) {
-        if (token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Extra token at end of line in ARITHOP.");
     }
 
@@ -241,18 +183,12 @@ Operation Parser::finishOUTPUT(Opcode opcode) {
 
     Token token = scanner.nextToken();
     if (token.category != Category::CAT_CONSTANT) {
-        if (token.category != Category::CAT_EOL && token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Missing constant in OUTPUT.");
     }
     op.op1.SR = token.lexeme;
 
     token = scanner.nextToken();
     if (token.category != Category::CAT_EOL) {
-        if (token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Extra token at end of line in OUTPUT.");
     }
 
@@ -266,9 +202,6 @@ Operation Parser::finishNOP(Opcode opcode) {
 
     Token token = scanner.nextToken();
     if (token.category != Category::CAT_EOL) {
-        if (token.category != Category::CAT_EOF) {
-            this->readToNextLine();
-        }
         throw InvalidTokenException(token, "Extra token at end of line in NOP.");
     }
 
@@ -282,5 +215,14 @@ void Parser::readToNextLine () {
             throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
         }
         token = scanner.nextToken();
+    }
+}
+
+void Parser::handleInvalidToken(const InvalidTokenException& e) {
+    std::cerr << "ERROR " << this->line << ": "  << e.what() << std::endl;
+    if (e.getToken().category == Category::CAT_EOF) {
+        throw new UnexpectedEOFException("Unexpected EOF at line " + std::to_string(this->line));
+    } else if (e.getToken().category != Category::CAT_EOL) {
+        this->readToNextLine();
     }
 }

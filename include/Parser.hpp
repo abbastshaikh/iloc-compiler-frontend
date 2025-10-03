@@ -11,22 +11,6 @@ struct InternalRepresentation {
     LinkedList<Operation>* operations;
 };
 
-class Parser {
-public:
-    Parser(Scanner& scanner) : scanner(scanner), line (0) {}
-    InternalRepresentation parse();
-
-private:
-    Scanner& scanner;
-    int line;
-    Operation finishMEMOP(Opcode opcode);
-    Operation finishLOADI(Opcode opcode);
-    Operation finishARITHOP(Opcode opcode);
-    Operation finishOUTPUT(Opcode opcode);
-    Operation finishNOP(Opcode opcode);
-    void readToNextLine();
-};
-
 class InvalidTokenException : public std::exception {
 public:
     InvalidTokenException(Token t, const std::string& msg) : token(t), message(msg) {}
@@ -62,4 +46,21 @@ public:
 
 private:         
     std::string message;
+};
+
+class Parser {
+public:
+    Parser(Scanner& scanner) : scanner(scanner), line (0) {}
+    InternalRepresentation parse();
+
+private:
+    Scanner& scanner;
+    int line;
+    Operation finishMEMOP(Opcode opcode);
+    Operation finishLOADI(Opcode opcode);
+    Operation finishARITHOP(Opcode opcode);
+    Operation finishOUTPUT(Opcode opcode);
+    Operation finishNOP(Opcode opcode);
+    void readToNextLine();
+    void handleInvalidToken(const InvalidTokenException& e);
 };

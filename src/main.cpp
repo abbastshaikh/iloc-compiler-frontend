@@ -50,7 +50,7 @@ void parse (std::string filename) {
          Parser parser (scanner);
          InternalRepresentation rep = parser.parse();
          std::cout << "Parse succeeded. Processed " << rep.count << " operations." << std::endl;
-      } catch (...) {
+      } catch (ParseFailedException& e) {
          std::cerr << "Parse found errors." << std::endl;
       }
    } catch (FileNotFoundException& e) {
@@ -67,7 +67,7 @@ void printIR (std::string filename) {
          Parser parser (scanner);
          InternalRepresentation rep = parser.parse();
          rep.operations->print();
-      } catch (...) {
+      } catch (ParseFailedException& e) {
          std::cerr << "Due to syntax errors, run terminates." << std::endl;
       }
    } catch (FileNotFoundException& e) {
